@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "hitchhiker-graphs"
+packages = [
+    { include="graphs" }
+]
+version = "0.1.0"
+description = "An educational package for learning about graph algorithms and theory"
+authors = ["Alejandro Piad-Morffis <apiad@apiad.net>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
