@@ -1,3 +1,4 @@
+import collections
 from typing import Callable, Generic, TypeVar
 from abc import ABC, abstractmethod, abstractproperty
 
@@ -33,6 +34,11 @@ class Graph(Generic[T], ABC):
 
 # @graph-end
 
+    def __init__(self) -> None:
+        self._graph_attrs = {}
+        self._node_attrs = collections.defaultdict(dict)
+        self._edge_attrs = collections.defaultdict(dict)
+
     @abstractproperty
     def directed(self):
         pass
@@ -51,6 +57,20 @@ class Graph(Generic[T], ABC):
                 if not self.directed:
                     seen.add((x,y))
 
+    def attr(self, key, val=None, *, node=None, edge=None):
+        if node is None and edge is None:
+            attrs = self._graph_attrs
+        elif node is not None:
+            attrs = self._node_attrs[node]
+        else:
+            attrs = self._edge_attrs[edge]
+
+        if val is not None:
+            attrs[key] = val
+
+        return attrs[key]
+
+
     def render(self, **kwargs):
         from .visual import as_graphviz
         from IPython.display import SVG
@@ -62,6 +82,7 @@ class Graph(Generic[T], ABC):
 # @adjgraph-main
 class AdjGraph(Graph[T]):
     def __init__(self, *nodes, directed=False) -> None:
+        super().__init__()
         self._links = {n: set() for n in nodes}
         self._directed = directed
 

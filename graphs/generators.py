@@ -34,13 +34,15 @@ def grid(rows:int, cols:int) -> AdjGraph:
     for i in range(0, rows):
         for j in range(0, cols):
             if i > 0:
-                g.link(f"{i};{j}", f"{i-1};{j}")
+                g.link(f"{i},{j}", f"{i-1},{j}")
             if j > 0:
-                g.link(f"{i};{j}", f"{i};{j-1}")
+                g.link(f"{i},{j}", f"{i},{j-1}")
             if i < rows - 1:
-                g.link(f"{i};{j}", f"{i+1};{j}")
+                g.link(f"{i},{j}", f"{i+1},{j}")
             if j < cols - 1:
-                g.link(f"{i};{j}", f"{i};{j+1}")
+                g.link(f"{i},{j}", f"{i},{j+1}")
+
+            g.attr("pos", f"{i},{j}!", node=f"{i},{j}")
 
     return g
 
@@ -48,8 +50,10 @@ def grid(rows:int, cols:int) -> AdjGraph:
 def maze(rows:int, cols:int, p_loop:float=0) -> AdjGraph:
     g = grid(rows, cols)
     graph = AdjGraph(*g.nodes())
+    graph._node_attrs = g._node_attrs
 
-    for x,y in DFS().traverse(g, "0;0"):
-        graph.link(x,y)
+    for x,y in DFS().traverse(g, "0,0"):
+        if x is not None:
+            graph.link(x,y)
 
     return graph
