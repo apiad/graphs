@@ -1,13 +1,17 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import Generic, Set, TypeVar, Callable, overload
 from .core import Graph
 
 T = TypeVar("T")
 
 
-class Search(Generic[T], meta=ABCMeta):
+class Search(Generic[T], ABC):
+    @abstractmethod
     def traverse(self, graph: Graph[T], root: T):
         pass
+
+    def iter(self, graph: Graph[T], root: T):
+        return (y for (x,y) in self.traverse(graph, root))
 
     def find_any(self, graph: Graph[T], origin: T, goal: Callable[[T], bool]):
         for node in self.traverse(graph, origin):
@@ -22,14 +26,14 @@ class Search(Generic[T], meta=ABCMeta):
 
 class DFS(Search[T]):
     def traverse(self, graph: Graph[T], root: T):
-        return self._dfs(graph, root, set())
+        return self._dfs(graph, root, None, set())
 
-    def _dfs(self, graph: Graph[T], current: T, visited: Set[T]):
-        yield current
+    def _dfs(self, graph: Graph[T], current: T, parent:T, visited: Set[T]):
+        yield parent, current
         visited.add(current)
 
-        for node in graph.neighborhood(T):
+        for node in graph.neighborhood(current):
             if node in visited:
                 continue
 
-            yield from self.traverse(graph, node, visited)
+            yield from self._dfs(graph, node, current, visited)
