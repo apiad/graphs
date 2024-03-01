@@ -18,7 +18,6 @@ class Graph(Generic[T], ABC):
     # ... rest of class Graph
 
 # @graph-extra
-
 # class Graph(...)
 #   ...
 
@@ -105,7 +104,6 @@ class AdjGraph(Graph[T]):
     # ... rest of AdjGraph
 
 # @adjgraph-extra
-
 # class AdjGraph(...)
 #   ...
 
