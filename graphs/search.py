@@ -33,6 +33,7 @@ class Search(Generic[T], ABC):
 
 # @search-end
 
+# @dfs
 class DFS(Search[T]):
     def traverse(self, graph: Graph[T], root: T):
         return self._dfs(graph, root, None, set())
@@ -46,3 +47,4 @@ class DFS(Search[T]):
                 continue
 
             yield from self._dfs(graph, node, current, visited)
+# @dfs-end
