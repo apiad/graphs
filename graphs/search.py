@@ -5,6 +5,31 @@ from .core import Graph
 T = TypeVar("T")
 
 
+# @paths
+class Paths(Generic[T]):
+    def __init__(self, origin:T) -> None:
+        self._parents = {}
+        self.origin = origin
+
+    def add(self, node, parent):
+        if node in self._parents:
+            raise ValueError("Node already exists")
+
+        self._parents[node] = parent
+
+    def path(self, destination) -> list[T]:
+        path = [destination]
+        node = destination
+
+        while node != self.origin:
+            node = self._parents[node]
+            path.append(node)
+
+        path.reverse()
+        return path
+# @paths-end
+
+
 # @search
 class Search(Generic[T], ABC):
     @abstractmethod
@@ -17,7 +42,6 @@ class Search(Generic[T], ABC):
     # ... extra methods in Search
 
 # @search-extra
-
 # class Search(...)
 #   ...
 
@@ -31,7 +55,19 @@ class Search(Generic[T], ABC):
     def find(self, graph: Graph[T], origin: T, destination: T):
         return self.find_any(graph, origin, goal=lambda n: n == destination)
 
+# @search-extra-2
+# class Search(...)
+#   ...
+
+    def compute_paths(self, graph: Graph[T], origin:T) -> Paths[T]:
+        paths = Paths(origin)
+
+        for parent, node in self.traverse(graph, origin):
+            paths.add(node, parent)
+
+        return paths
 # @search-end
+
 
 # @dfs
 class DFS(Search[T]):
