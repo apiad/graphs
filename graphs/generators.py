@@ -42,7 +42,7 @@ def grid(rows:int, cols:int) -> AdjGraph:
             if j < cols - 1:
                 g.link(f"{i},{j}", f"{i},{j+1}")
 
-            g.attr("pos", f"{i},{j}!", node=f"{i},{j}")
+            g.attr(pos=f"{i},{j}!", node=f"{i},{j}")
 
     return g
 
@@ -55,5 +55,8 @@ def maze(rows:int, cols:int, p_loop:float=0) -> AdjGraph:
     for x,y in DFS().traverse(g, "0,0"):
         if x is not None:
             graph.link(x,y)
+
+    for node in graph.nodes():
+        graph.attr(node=node, label="")
 
     return graph

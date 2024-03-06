@@ -56,7 +56,7 @@ class Graph(Generic[T], ABC):
                 if not self.directed:
                     seen.add((x,y))
 
-    def attr(self, key, val=None, *, node=None, edge=None):
+    def attr(self, *, node=None, edge=None, **kwargs):
         if node is None and edge is None:
             attrs = self._graph_attrs
         elif node is not None:
@@ -64,18 +64,19 @@ class Graph(Generic[T], ABC):
         else:
             attrs = self._edge_attrs[edge]
 
-        if val is not None:
+        for key,val in kwargs.items():
             attrs[key] = val
 
-        return attrs[key]
-
-
-    def render(self, **kwargs):
+    def render(self, format="svg", **kwargs):
         from .visual import as_graphviz
-        from IPython.display import SVG
+        from IPython.display import SVG, Image
 
         gv = as_graphviz(self)
-        return SVG(gv.pipe(format="svg", encoding="utf-8", **kwargs))
+
+        if format == "svg":
+            return SVG(gv.pipe(format=format, encoding="utf-8", **kwargs))
+        elif format == "png":
+            return Image(gv.pipe(format=format, **kwargs))
 
 
 # @adjgraph-main
