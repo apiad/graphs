@@ -1,5 +1,6 @@
 from .core import Graph
 
+
 # @paths
 class Paths:
     def __init__(self, origin) -> None:
@@ -22,6 +23,8 @@ class Paths:
 
         path.reverse()
         return path
+
+
 # @paths-end
 
 
@@ -31,13 +34,13 @@ class Search:
         pass
 
     def nodes(self, graph: Graph, root):
-        return (y for (x,y) in self.traverse(graph, root))
+        return (y for (x, y) in self.traverse(graph, root))
 
     # ... extra methods in Search
 
-# @search-extra
-# class Search(...)
-#   ...
+    # @search-extra
+    # class Search(...)
+    #   ...
 
     def find_any(self, graph: Graph, origin, goal):
         for node in self.traverse(graph, origin):
@@ -49,9 +52,9 @@ class Search:
     def find(self, graph: Graph, origin, destination):
         return self.find_any(graph, origin, goal=lambda n: n == destination)
 
-# @search-extra-2
-# class Search(...)
-#   ...
+    # @search-extra-2
+    # class Search(...)
+    #   ...
 
     def compute_paths(self, graph: Graph, origin) -> Paths:
         paths = Paths(origin)
@@ -60,6 +63,8 @@ class Search:
             paths.add(node, parent)
 
         return paths
+
+
 # @search-end
 
 
@@ -77,4 +82,27 @@ class DFS(Search):
                 continue
 
             yield from self._dfs(graph, node, current, visited)
+
+
 # @dfs-end
+
+
+# @bfs
+class BFS(Search):
+    def traverse(self, graph: Graph, root):
+        queue = [(root, None)]
+        visited = {root}
+
+        while queue:
+            current, parent = queue.pop(0)
+            yield parent, current
+
+            for y in graph.neighborhood(current):
+                if y in visited:
+                    continue
+
+                queue.append((y, current))
+                visited.add(y)
+
+
+# @bfs-end

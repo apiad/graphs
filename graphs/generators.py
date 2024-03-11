@@ -1,6 +1,6 @@
-from graphs.core import Graph, AdjGraph
+from graphs.core import AdjGraph
 from random import Random
-from graphs.search import DFS
+from graphs.search import DFS, BFS
 from graphs import layout
 
 
@@ -65,6 +65,14 @@ def maze(rows: int, cols: int, p_loop: float = 0) -> AdjGraph:
 
     for node in graph.nodes():
         graph.attr(node=node, label="")
+
+    origin = list(BFS().nodes(graph, "0,0"))[-1]
+
+    graph.attr(label="S", shape='square', node=origin)
+    graph.attr(label="E", shape='square', node="0,0")
+
+    graph.start = origin
+    graph.end = "0,0"
 
     return graph
 
