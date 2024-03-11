@@ -1,31 +1,34 @@
 from graphs.core import Graph, AdjGraph
 from random import Random
 from graphs.search import DFS
+from graphs import layout
 
 
-def complete(n: int) -> AdjGraph[int]:
-    return AdjGraph().clique(*range(1, n + 1))
-
-
-def path(n: int) -> AdjGraph[int]:
-    g = AdjGraph().path(*range(1, n + 1))
-
-    for i in range(1,n+1):
-        g.attr(pos=f"{i},0!", node=i)
-
+def complete(n: int) -> AdjGraph:
+    g = AdjGraph().clique(*range(1, n + 1))
+    layout.circle(g)
     return g
 
 
-def cycle(n: int) -> AdjGraph[int]:
-    return AdjGraph().cycle(*range(1, n + 1))
+def path(n: int) -> AdjGraph:
+    g = AdjGraph().path(*range(1, n + 1))
+    layout.line(g)
+    return g
 
 
-def uniform(n: int, p: float, seed: int = None) -> AdjGraph[int]:
-    g = AdjGraph(*range(n))
+def cycle(n: int) -> AdjGraph:
+    g = AdjGraph().cycle(*range(1, n + 1))
+    layout.circle(g)
+    return g
+
+
+def uniform(n: int, p: float, seed: int = None) -> AdjGraph:
+    g = AdjGraph(*range(1, n + 1))
     r = Random(seed)
+    layout.circle(g)
 
-    for i in range(n):
-        for j in range(i + 1, n):
+    for i in range(1, n + 1):
+        for j in range(i + 1, n + 1):
             if r.uniform(0, 1) <= p:
                 g.link(i, j)
 

@@ -1,19 +1,13 @@
 import collections
-from typing import Callable, Generic, TypeVar
-from abc import ABC, abstractmethod, abstractproperty
 
-
-T = TypeVar("T")
 
 # @graph-main
-class Graph(Generic[T], ABC):
-    @abstractmethod
+class Graph:
     def nodes(self):
-        pass
+        raise NotImplemented
 
-    @abstractmethod
-    def adjacent(self, x: T, y: T) -> bool:
-        pass
+    def adjacent(self, x, y) -> bool:
+        raise NotImplemented
 
     # ... rest of class Graph
 
@@ -21,12 +15,12 @@ class Graph(Generic[T], ABC):
 # class Graph(...)
 #   ...
 
-    def neighborhood(self, x: T):
+    def neighborhood(self, x):
         for y in self.nodes():
             if self.adjacent(x, y):
                 yield y
 
-    def degree(self, x: T) -> int:
+    def degree(self, x) -> int:
         return len(list(self.neighborhood(x)))
 
 #   ...
@@ -38,10 +32,12 @@ class Graph(Generic[T], ABC):
         self._node_attrs = collections.defaultdict(dict)
         self._edge_attrs = collections.defaultdict(dict)
 
-    @abstractproperty
+    @property
     def directed(self):
-        pass
+        return False
 
+    def __len__(self):
+        return len(self.nodes())
 
     def edges(self):
         seen = set()
@@ -80,27 +76,25 @@ class Graph(Generic[T], ABC):
 
 
 # @adjgraph-main
-class AdjGraph(Graph[T]):
-    def __init__(self, *nodes, directed=False) -> None:
+class AdjGraph(Graph):
+    def __init__(self, *nodes) -> None:
         super().__init__()
         self._links = {n: set() for n in nodes}
-        self._directed = directed
 
-    @property
-    def directed(self):
-        return self._directed
-
-    def nodes(self) -> list[T]:
+    def nodes(self):
         return iter(self._links)
 
-    def adjacent(self, x: T, y: T) -> bool:
+    def adjacent(self, x, y) -> bool:
         return y in self._links[x]
 
-    def neighborhood(self, x: T):
+    def neighborhood(self, x):
         return iter(self._links[x])
 
-    def degree(self, x: T) -> int:
+    def degree(self, x) -> int:
         return len(self._links[x])
+
+    def __len__(self):
+        return len(self._links)
 
     # ... rest of AdjGraph
 
@@ -108,7 +102,7 @@ class AdjGraph(Graph[T]):
 # class AdjGraph(...)
 #   ...
 
-    def add(self, *nodes: T):
+    def add(self, *nodes):
         for n in nodes:
             if n in self._links:
                 return False
@@ -117,16 +111,14 @@ class AdjGraph(Graph[T]):
 
         return self
 
-    def link(self, x: T, y: T):
+    def link(self, x, y):
         if x == y:
             raise ValueError("Self-links not allowed.")
 
         self.add(x)
         self.add(y)
         self._links[x].add(y)
-
-        if not self._directed:
-            self._links[y].add(x)
+        self._links[y].add(x)
 
         return self
 
@@ -134,18 +126,18 @@ class AdjGraph(Graph[T]):
 
 # @adjgraph-extra-2
 
-    def path(self, *nodes:T):
+    def path(self, *nodes):
         for x,y in zip(nodes, nodes[1:]):
             self.link(x,y)
 
         return self
 
-    def cycle(self, *nodes:T):
+    def cycle(self, *nodes):
         self.path(*nodes)
         self.link(nodes[-1], nodes[0])
         return self
 
-    def clique(self, *nodes:T):
+    def clique(self, *nodes):
         for x in nodes:
             for y in nodes:
                 if x != y:
@@ -153,7 +145,7 @@ class AdjGraph(Graph[T]):
 
         return self
 
-    def extend(self, other: Graph[T]):
+    def extend(self, other: Graph):
         for x in other.nodes():
             for y in other.neighborhood(x):
                 self.link(x, y)
@@ -162,7 +154,7 @@ class AdjGraph(Graph[T]):
 
     @classmethod
     def combine(
-        cls, g1: Graph[T], g2: Graph[T], cross_links: Callable[[T, T], bool] = None
+        cls, g1: Graph, g2: Graph, cross_links = None
     ):
         if cross_links is None:
             cross_links = lambda x, y: False
@@ -177,14 +169,30 @@ class AdjGraph(Graph[T]):
         return g
 
     @classmethod
-    def product(cls, g1: Graph[T], g2: Graph[T]):
-        return cls.combine(g1, g2, lambda x, y: True)
+    def product(cls, g1: Graph, g2: Graph):
+        return cls.combine(g1, g2, lambda x: True)
 
     @classmethod
-    def zip(cls, g1: Graph[T], g2: Graph[T]):
+    def zip(cls, g1: Graph, g2: Graph):
         g = cls().extend(g1).extend(g2)
 
         for x, y in zip(g1.nodes(), g2.nodes()):
             g.link(x, y)
 
         return g
+
+
+class AdjDigraph(AdjGraph):
+    def link(self, x, y):
+        if x == y:
+            raise ValueError("Self-links not allowed.")
+
+        self.add(x)
+        self.add(y)
+        self._links[x].add(y)
+
+        return self
+
+    @property
+    def directed(self):
+        return True

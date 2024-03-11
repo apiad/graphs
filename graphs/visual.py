@@ -2,7 +2,7 @@ from .core import Graph
 import graphviz
 
 
-def as_graphviz(graph: Graph, *, node_shape="circle") -> graphviz.Graph | graphviz.Digraph:
+def as_graphviz(graph: Graph, *, node_shape="circle") -> graphviz.Graph:
     g = graphviz.Digraph() if graph.directed else graphviz.Graph()
 
     for node in graph.nodes():

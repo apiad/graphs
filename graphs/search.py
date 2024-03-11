@@ -1,13 +1,8 @@
-from abc import ABC, abstractmethod
-from typing import Generic, Set, TypeVar, Callable, overload
 from .core import Graph
 
-T = TypeVar("T")
-
-
 # @paths
-class Paths(Generic[T]):
-    def __init__(self, origin:T) -> None:
+class Paths:
+    def __init__(self, origin) -> None:
         self._parents = {}
         self.origin = origin
 
@@ -17,7 +12,7 @@ class Paths(Generic[T]):
 
         self._parents[node] = parent
 
-    def path(self, destination) -> list[T]:
+    def path(self, destination):
         path = [destination]
         node = destination
 
@@ -31,12 +26,11 @@ class Paths(Generic[T]):
 
 
 # @search
-class Search(Generic[T], ABC):
-    @abstractmethod
-    def traverse(self, graph: Graph[T], root: T):
+class Search:
+    def traverse(self, graph: Graph, root):
         pass
 
-    def nodes(self, graph: Graph[T], root: T):
+    def nodes(self, graph: Graph, root):
         return (y for (x,y) in self.traverse(graph, root))
 
     # ... extra methods in Search
@@ -45,21 +39,21 @@ class Search(Generic[T], ABC):
 # class Search(...)
 #   ...
 
-    def find_any(self, graph: Graph[T], origin: T, goal: Callable[[T], bool]):
+    def find_any(self, graph: Graph, origin, goal):
         for node in self.traverse(graph, origin):
             if goal(node):
                 return True
 
         return False
 
-    def find(self, graph: Graph[T], origin: T, destination: T):
+    def find(self, graph: Graph, origin, destination):
         return self.find_any(graph, origin, goal=lambda n: n == destination)
 
 # @search-extra-2
 # class Search(...)
 #   ...
 
-    def compute_paths(self, graph: Graph[T], origin:T) -> Paths[T]:
+    def compute_paths(self, graph: Graph, origin) -> Paths:
         paths = Paths(origin)
 
         for parent, node in self.traverse(graph, origin):
@@ -70,11 +64,11 @@ class Search(Generic[T], ABC):
 
 
 # @dfs
-class DFS(Search[T]):
-    def traverse(self, graph: Graph[T], root: T):
+class DFS(Search):
+    def traverse(self, graph: Graph, root):
         return self._dfs(graph, root, None, set())
 
-    def _dfs(self, graph: Graph[T], current: T, parent:T, visited: Set[T]):
+    def _dfs(self, graph: Graph, current, parent, visited: set):
         yield parent, current
         visited.add(current)
 
