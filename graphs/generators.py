@@ -8,7 +8,12 @@ def complete(n: int) -> AdjGraph[int]:
 
 
 def path(n: int) -> AdjGraph[int]:
-    return AdjGraph().path(*range(1, n + 1))
+    g = AdjGraph().path(*range(1, n + 1))
+
+    for i in range(1,n+1):
+        g.attr(pos=f"{i},0!", node=i)
+
+    return g
 
 
 def cycle(n: int) -> AdjGraph[int]:
@@ -102,6 +107,5 @@ def cube(layout="3d") -> AdjGraph:
         g.attr(node="f", pos="1.5,-0.5!")
         g.attr(node="g", pos="1.5,1.5!")
         g.attr(node="h", pos="-0.5,1.5!")
-
 
     return g
