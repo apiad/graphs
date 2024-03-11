@@ -54,14 +54,22 @@ def grid(rows: int, cols: int) -> AdjGraph:
     return g
 
 
-def maze(rows: int, cols: int, p_loop: float = 0) -> AdjGraph:
+def maze(rows: int, cols: int, loops: float = 0) -> AdjGraph:
     g = grid(rows, cols)
+    r = Random()
     graph = AdjGraph(*g.nodes())
     graph._node_attrs = g._node_attrs
 
     for x, y in DFS().traverse(g, "0,0"):
         if x is not None:
             graph.link(x, y)
+
+    for (x,y) in graph.edges():
+        if graph.adjacent(x, y):
+            continue
+
+        if r.uniform(0,1) < loops:
+            graph.link(x,y)
 
     for node in graph.nodes():
         graph.attr(node=node, label="")
