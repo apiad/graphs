@@ -61,7 +61,7 @@ class Graph:
             attrs = self._edge_attrs[edge]
 
         for key,val in kwargs.items():
-            attrs[key] = val
+            attrs[key] = str(val)
 
     def render(self, format="svg", **kwargs):
         from .visual import as_graphviz
