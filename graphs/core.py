@@ -126,6 +126,19 @@ class AdjGraph(Graph):
 
 # @adjgraph-extra-2
 
+    def unlink(self, x, y):
+        self._links[x].remove(y)
+        self._links[y].remove(x)
+
+        return self
+
+    def split(self, x, y, z):
+        self.unlink(x, y)
+        self.link(x,z)
+        self.link(y,z)
+
+        return self
+
     def path(self, *nodes):
         for x,y in zip(nodes, nodes[1:]):
             self.link(x,y)
