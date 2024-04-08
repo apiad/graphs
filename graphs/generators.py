@@ -35,6 +35,19 @@ def uniform(n: int, p: float, seed: int = None) -> AdjGraph:
     return g
 
 
+def bipartite(x:int, y:int) -> AdjGraph:
+    g = AdjGraph()
+
+    for xi in range(1,x+1):
+        for yi in range(1,y+1):
+            g.link(f"x{xi}",f"y{yi}")
+            g.attr(node=f"y{yi}", pos=f"1,{yi}!")
+
+        g.attr(node=f"x{xi}", pos=f"0,{xi}!")
+
+    return g
+
+
 def grid(rows: int, cols: int) -> AdjGraph:
     g = AdjGraph()
 
