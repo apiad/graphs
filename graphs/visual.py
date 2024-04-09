@@ -11,6 +11,11 @@ def as_graphviz(graph: Graph, *, node_shape="circle") -> graphviz.Graph:
         g.node(str(node), **attrs)
 
     for x,y in graph.edges():
-        g.edge(tail_name=str(x), head_name=str(y), **graph._edge_attrs[(x,y)])
+        attrs = graph._edge_attrs[(x,y)]
+
+        if not graph.directed:
+            attrs.update(graph._edge_attrs[(y,x)])
+
+        g.edge(tail_name=str(x), head_name=str(y), **attrs)
 
     return g
